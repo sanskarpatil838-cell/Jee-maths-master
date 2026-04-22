@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎯 JEE Maths Master - Advanced Learning Platform</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<!-- Animated Background Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="login-screen" class="login-overlay">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-icon"><i class="fas fa-calculator"></i></div>
+      <h1>JEE Maths Master</h1>
+      <p>Advanced Learning Platform</p>
+    </div>
+    <div class="avatar-section">
+      <p class="avatar-label">Choose your avatar</p>
+      <div class="avatar-grid" id="avatar-grid"></div>
+    </div>
+    <div class="login-form">
+      <input type="text" id="username-input" placeholder="Display name (needed for first signup)" maxlength="20" class="name-input"
+        onkeydown="if(event.key==='Enter') createAccount()"/>
+      <input type="email" id="email-input" placeholder="Enter your email..." class="name-input"
+        onkeydown="if(event.key==='Enter') signInWithEmail()"/>
+      <input type="password" id="password-input" placeholder="Enter your password..." class="name-input"
+        onkeydown="if(event.key==='Enter') signInWithEmail()"/>
+      <button class="btn btn-primary btn-lg" onclick="createAccount()">
+        <i class="fas fa-user-plus"></i> Create Account
+      </button>
+      <button class="btn btn-secondary btn-lg" onclick="signInWithEmail()">
+        <i class="fas fa-envelope"></i> Sign In with Email
+      </button>
+      <button class="btn btn-google btn-lg" onclick="signInWithGoogle()">
+        <i class="fab fa-google"></i> Continue with Google
+      </button>
+      <p class="auth-note">Your account, scores, history, and leaderboard will sync across devices.</p>
+      <p class="auth-status" id="auth-status"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DIFFICULTY MODAL ===== -->
+<div id="difficulty-modal" class="modal-overlay" style="display:none">
+  <div class="modal-card">
+    <h2>⚡ Select Difficulty</h2>
+    <p id="modal-chapter-name" class="modal-subtitle"></p>
+    <div class="difficulty-grid">
+      <div class="difficulty-card easy" onclick="selectDifficulty('easy')">
+        <div class="diff-emoji">🟢</div>
+        <h3>Easy</h3>
+        <p>Foundational questions</p>
+        <div class="diff-time"><i class="fas fa-clock"></i> 150s per Q</div>
+      </div>
+      <div class="difficulty-card medium" onclick="selectDifficulty('medium')">
+        <div class="diff-emoji">🟡</div>
+        <h3>Medium</h3>
+        <p>Moderate challenge</p>
+        <div class="diff-time"><i class="fas fa-clock"></i> 120s per Q</div>
+      </div>
+      <div class="difficulty-card hard" onclick="selectDifficulty('hard')">
+        <div class="diff-emoji">🔴</div>
+        <h3>Hard</h3>
+        <p>Advanced problems</p>
+        <div class="diff-time"><i class="fas fa-clock"></i> 90s per Q</div>
+      </div>
+      <div class="difficulty-card all" onclick="selectDifficulty('all')">
+        <div class="diff-emoji">🎯</div>
+        <h3>All Levels</h3>
+        <p>Complete chapter</p>
+        <div class="diff-time"><i class="fas fa-clock"></i> 120s per Q</div>
+      </div>
+    </div>
+    <button class="btn btn-danger" onclick="closeDifficultyModal()" style="margin-top:1.5rem">
+      <i class="fas fa-times"></i> Cancel
+    </button>
+  </div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<div class="header">
+  <div class="header-content">
+    <div class="logo">
+      <i class="fas fa-calculator"></i>
+      <span>JEE Maths Master</span>
+    </div>
+    <div class="header-right">
+      <div class="user-profile-pill" id="user-profile" onclick="showProfileOptions()">
+        <span id="user-avatar-display">🎓</span>
+        <span id="user-name-display">Guest</span>
+      </div>
+      <div class="wallet">
+        <i class="fas fa-coins"></i>
+        <span>Points: <span id="points">0</span></span>
+      </div>
+      <button class="icon-btn" id="sound-btn" onclick="toggleSound()" title="Toggle Sound Effects">
+        <i class="fas fa-volume-up"></i>
+      </button>
+      <button class="icon-btn" id="music-btn" onclick="toggleMusic()" title="Toggle Ambient Music">
+        <i class="fas fa-music"></i>
+      </button>
+      <button class="icon-btn" id="dark-btn" onclick="toggleDark()" title="Toggle Dark Mode">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HOME ===== -->
+<div class="container" id="home" style="display:none">
+
+  <!-- Welcome + Stats -->
+  <div class="dashboard">
+    <div class="welcome-row">
+      <div class="welcome-left">
+        <div class="welcome-avatar" id="welcome-avatar">🎓</div>
+        <div>
+          <h2 id="welcome-name">Welcome!</h2>
+          <p id="welcome-sub" style="color:var(--text-secondary)">Ready to master JEE Maths today?</p>
+        </div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="logoutUser()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="tests-completed-display">0</div>
+        <div>Tests Completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="total-points-display">0</div>
+        <div>Total Points</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="accuracy-display">0%</div>
+        <div>Average Accuracy</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="time-spent-display">0h 0m</div>
+        <div>Time Spent</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Performance Charts -->
+  <div class="dashboard">
+    <h2>📊 Performance Analytics</h2>
+    <div class="charts-grid">
+      <div class="chart-container">
+        <h4>Accuracy Trend (Last 10 Tests)</h4>
+        <div class="chart-wrap" id="accuracy-chart-wrap"><canvas id="accuracyChart"></canvas></div>
+      </div>
+      <div class="chart-container">
+        <h4>Best Score Per Chapter</h4>
+        <div class="chart-wrap" id="chapter-chart-wrap"><canvas id="chapterChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chapters -->
+  <h2 class="text-center mb-3">📚 Select a Chapter to Begin</h2>
+  <div class="chapter-grid" id="chapter-list"></div>
+
+  <!-- Leaderboard -->
+  <div class="dashboard">
+    <h2>🏆 Leaderboard</h2>
+    <div id="leaderboard-list"></div>
+  </div>
+
+  <!-- History -->
+  <div class="dashboard">
+    <h2>📋 Chapter Attempt History</h2>
+    <div id="history-list"></div>
+  </div>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div class="container quiz" id="quiz" style="display:none">
+  <div class="timer-container">
+    <div class="timer" id="timer">
+      <i class="fas fa-clock"></i>
+      <span>02:00</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <div class="difficulty-badge" id="difficulty-badge">🎯 All</div>
+      <div class="question-counter">
+        <span id="current-question">1</span>/<span id="total-questions">10</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress-container">
+    <div class="progress-bar">
+      <div class="progress" id="progress"></div>
+    </div>
+  </div>
+
+  <h3 class="chapter-title text-center mb-3" id="chapter-title"></h3>
+
+  <div class="question-container">
+    <h3 id="qText" class="mb-2"></h3>
+    <div class="option-grid" id="options"></div>
+  </div>
+
+  <div class="nav-grid" id="nav"></div>
+
+  <div class="actions">
+    <button class="btn btn-secondary" onclick="markQuestion()" id="mark-btn">
+      <i class="fas fa-bookmark"></i>Mark for Review
+    </button>
+    <button class="btn btn-primary" onclick="prevQ()" id="prev-btn">
+      <i class="fas fa-arrow-left"></i>Previous
+    </button>
+    <button class="btn btn-primary" onclick="nextQ()" id="next-btn">
+      Next <i class="fas fa-arrow-right"></i>
+    </button>
+    <button class="btn btn-success" onclick="submitTest()" id="submit-btn">
+      <i class="fas fa-paper-plane"></i>Submit Test
+    </button>
+    <button class="btn btn-danger" onclick="goHomeEarly()">
+      <i class="fas fa-home"></i>Back to Home
+    </button>
+  </div>
+</div>
+
+<!-- ===== RESULT ===== -->
+<div class="container" id="result" style="display:none">
+  <div class="result-container">
+    <h2>🎉 Test Results</h2>
+    <div id="score-display"></div>
+
+    <div class="review-section" id="review-section"></div>
+
+    <button class="btn btn-primary" onclick="goHome()">
+      <i class="fas fa-home"></i>Back to Chapters
+    </button>
+
+    <div class="leaderboard">
+      <h3>📈 Your Progress Summary</h3>
+      <div class="leaderboard-item">
+        <span>Total Points:</span>
+        <span id="total-points">0</span>
+      </div>
+      <div class="leaderboard-item">
+        <span>Tests Completed:</span>
+        <span id="tests-completed">0</span>
+      </div>
+      <div class="leaderboard-item">
+        <span>Average Score:</span>
+        <span id="average-score">0%</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script defer src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
+<script defer src="firebase-config.js"></script>
+<script src="script.js" defer></script>
+
+
+</body>
+</html>
